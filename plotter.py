@@ -1,5 +1,3 @@
-# Filename: dialog.py
-
 """Dialog-Style application."""
 
 import sys
