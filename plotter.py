@@ -1,16 +1,18 @@
-# Filename: dialog.py
-
 """Dialog-Style application."""
 
 import sys
+import re
+import numpy as np
+import matplotlib.pyplot as plt
 from PySide2 import QtCore
 from PySide2.QtGui import QColor, QPalette
 from PySide2.QtWidgets import QApplication, QSizePolicy, QDialog, QLabel, QHBoxLayout, QVBoxLayout, QLineEdit, QPushButton
 
-
 class Dialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        #Set Window Style
         self.setWindowTitle('Plotter')
         self.setGeometry(500,300,700,700)
         palette = self.palette()
@@ -72,16 +74,58 @@ class Dialog(QDialog):
         MainLayout.addWidget(self.PlotBtn)
         self.setLayout(MainLayout)
 
+#############################################################
+#############################################################
+##################  Functions To Plot  ######################
+#############################################################
+#############################################################
+
+        def ConvertStringtoFunction(string):
+            #Prepare the string to conversion   
+            string = string.replace('X','x')        #Convert to lowercase
+            string = string.replace(' ','')         #Remove spaces
+            string = string.replace('^','**')       #Handle power function
+
+            # find all words and check if all are allowed:
+            for char in string:
+                if char != 'x' and char != '+' and char != '-' and char != '/' and char != '*' and not char.isdigit():
+                    raise ValueError(
+                        '"{}" is forbidden to use in math expression'.format(char)
+                    )        
+            
+            #Convert string topython code.           
+            return eval(string) 
+
+        def CheckMinValidation(string):
+            if not string.isdigit() and not string.find('.'):
+                raise ValueError(
+                        '"{}" is not a number, Please enter a number'.format(string)
+                    )  
+            return float(string)       
+
+        def CheckMaxValidation(string):
+            if not string.isdigit() and not string.find('.'):
+                raise ValueError(
+                        '"{}" is not a number, Please enter a number'.format(string)
+                    )  
+            return float(string)       
+
+        #The root function
         def Plot():
-            print(self.FunctionTextBox.text())
-            print(self.MinXTextBox.text())
-            print(self.MaxTextBox.text())
+            Min = CheckMinValidation(self.MinXTextBox.text())
+            Max = CheckMaxValidation(self.MaxTextBox.text())
+            x = np.linspace(Min, Max, 250)
+            Function = ConvertStringtoFunction(self.FunctionTextBox.text())
+            plt.plot(x, Function)
+            plt.xlim(Min, Max)
+            plt.show()
 
     #Listening to Events
         self.PlotBtn.clicked.connect(Plot)  
 
 
 if __name__ == '__main__':
+    x = np.linspace(-2, 2, 250)
     app = QApplication(sys.argv)
     dlg = Dialog()
     dlg.show()
