@@ -93,8 +93,11 @@ class Dialog(QDialog):
                         '"{}" is forbidden to use in math expression'.format(char)
                     )        
             
-            #Convert string topython code.           
-            return eval(string) 
+            #Convert string to python code.   
+            def Function(x):
+                return eval(string)
+
+            return Function        
 
         def CheckMinValidation(string):
             if not string.isdigit() and not string.find('.'):
@@ -116,7 +119,7 @@ class Dialog(QDialog):
             Max = CheckMaxValidation(self.MaxTextBox.text())
             x = np.linspace(Min, Max, 250)
             Function = ConvertStringtoFunction(self.FunctionTextBox.text())
-            plt.plot(x, Function)
+            plt.plot(x, Function(x))
             plt.xlim(Min, Max)
             plt.show()
 
@@ -125,7 +128,6 @@ class Dialog(QDialog):
 
 
 if __name__ == '__main__':
-    x = np.linspace(-2, 2, 250)
     app = QApplication(sys.argv)
     dlg = Dialog()
     dlg.show()
