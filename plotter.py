@@ -6,14 +6,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PySide2 import QtCore
 from PySide2.QtGui import QColor, QPalette, QIcon
-from PySide2.QtWidgets import QApplication, QSizePolicy, QDialog, QLabel, QHBoxLayout, QVBoxLayout, QLineEdit, QPushButton
+from PySide2.QtWidgets import QApplication, QMessageBox, QSizePolicy, QDialog, QLabel, QHBoxLayout, QVBoxLayout, QLineEdit, QPushButton, QErrorMessage
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+
+
 class Dialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        #Set Window Style
+        #Set Window Style and features
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowSystemMenuHint |QtCore.Qt.WindowMinMaxButtonsHint)
         self.setWindowTitle('Plotter')
         self.setWindowIcon(QIcon('icon.svg'))
@@ -100,10 +102,29 @@ class Dialog(QDialog):
             # find all words and check if all are allowed:
             for char in string:
                 if char != 'x' and char != '+' and char != '-' and char != '/' and char != '*' and not char.isdigit():
+                    # err = QErrorMessage()
+                    # err.showMessage("Wrong Function Format!!")
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Critical)
+                    msg.setText("Error")
+                    msg.setInformativeText('Wrong Function Format !!, Please Use Only (+ - * / x)')
+                    msg.setWindowTitle("Error")
+                    msg.exec_()
                     raise ValueError(
                         '"{}" is forbidden to use in math expression'.format(char)
                     )        
             
+            if string == "":
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText("Error")
+                msg.setInformativeText('Please enter a valid function first :)')
+                msg.setWindowTitle("Error")
+                msg.exec_()
+                raise ValueError(
+                        'No function entered'
+                    )   
+
             #Convert string to python code.   
             def Function(x):
                 return eval(string)
@@ -111,17 +132,50 @@ class Dialog(QDialog):
             return Function        
 
         def CheckMinValidation(string):
-            if not string.isdigit() and not string.find('.'):
-                raise ValueError(
-                        '"{}" is not a number, Please enter a number'.format(string)
-                    )  
+            #Check if the number is negative
+            Negative = False
+            if string != "" and string[0] == '-':
+                string = string.replace('-','')  
+                Negative = True  
+
+            string = string.replace(' ','')         #Remove spaces
+            if not string.isdigit():                                                  #Check if it's not integer
+                if re.match(r'^-?\d+(?:\.\d+)$', string) is None :     #Check if it's not float
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Critical)
+                    msg.setText("Error")
+                    msg.setFixedSize(500,500)
+                    msg.setInformativeText('Please enter a valid Min number')
+                    msg.setWindowTitle("Error")
+                    msg.exec_()
+                    raise ValueError(
+                            '"{}" is not a number, Please enter a number'.format(string)
+                        )       
+            if (Negative):
+                return -1*float(string)             
             return float(string)       
 
         def CheckMaxValidation(string):
-            if not string.isdigit() and not string.find('.'):
-                raise ValueError(
-                        '"{}" is not a number, Please enter a number'.format(string)
-                    )  
+            #Check if the number is negative
+            Negative = False
+            if string != "" and string[0] == '-':
+                string = string.replace('-','')  
+                Negative = True  
+
+            string = string.replace(' ','')         #Remove spaces
+            if not string.isdigit():                                                  #Check if it's not integer
+                if re.match(r'^-?\d+(?:\.\d+)$', string) is None :     #Check if it's not float
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Critical)
+                    msg.setText("Error")
+                    msg.setInformativeText('Please enter a valid Max number')
+                    msg.setWindowTitle("Error")
+                    msg.exec_()
+                    raise ValueError(
+                            '"{}" is not a number, Please enter a number'.format(string)
+                        )     
+            if (Negative):
+                return -1*float(string)             
             return float(string)       
 
         #The root function
