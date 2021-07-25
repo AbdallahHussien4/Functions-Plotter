@@ -49,7 +49,18 @@ def ConvertStringtoFunction(string):
 
     #Convert string to python code.   
     def Function(x):
-        return eval(string)
+        try:
+            return eval(string)
+        except:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('Check writing 6*x instead of 6x for example')
+            msg.setWindowTitle("Error")
+            msg.exec_()
+            raise ValueError(
+                    'Wrong function entered'
+                )  
 
     return Function        
 
