@@ -199,9 +199,6 @@ class Dialog(QDialog):
             ax = self.figure.add_subplot(111)
             ax.plot(x, Function(x))
             self.canvas.draw()
-            # plt.plot(x, Function(x))
-            # plt.xlim(Min, Max)
-            # plt.show()
 
     #Listening to Events
         self.PlotBtn.clicked.connect(Plot)  
