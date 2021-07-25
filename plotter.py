@@ -11,6 +11,102 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 
+#############################################################
+#############################################################
+######################  Plot Handlers  ######################
+#############################################################
+#############################################################
+
+def ConvertStringtoFunction(string):
+    #Prepare the string to conversion   
+    string = string.replace('X','x')        #Convert to lowercase
+    string = string.replace(' ','')         #Remove spaces
+    string = string.replace('^','**')       #Handle power function
+
+    # find all words and check if all are allowed:
+    for char in string:
+        if char != 'x' and char != '+' and char != '-' and char != '/' and char != '*' and not char.isdigit():
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('Wrong Function Format !!, Please Use Only (+ - * / x)')
+            msg.setWindowTitle("Error")
+            msg.exec_()
+            raise ValueError(
+                '"{}" is forbidden to use in math expression'.format(char)
+            )        
+    
+    if string == "":
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText("Error")
+        msg.setInformativeText('Please enter a valid function first :)')
+        msg.setWindowTitle("Error")
+        msg.exec_()
+        raise ValueError(
+                'No function entered'
+            )   
+
+    #Convert string to python code.   
+    def Function(x):
+        return eval(string)
+
+    return Function        
+
+def CheckMinValidation(string):
+    #Check if the number is negative
+    Negative = False
+    if string != "" and string[0] == '-':
+        string = string.replace('-','')  
+        Negative = True  
+
+    string = string.replace(' ','')         #Remove spaces
+    if not string.isdigit():                                                  #Check if it's not integer
+        if re.match(r'^-?\d+(?:\.\d+)$', string) is None :                    #Check if it's not float
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setFixedSize(500,500)
+            msg.setInformativeText('Please enter a valid Min number')
+            msg.setWindowTitle("Error")
+            msg.exec_()
+            raise ValueError(
+                    '"{}" is not a number, Please enter a number'.format(string)
+                )      
+    if (Negative):
+        return -1*float(string)             
+    return float(string)       
+
+def CheckMaxValidation(string):
+    #Check if the number is negative
+    Negative = False
+    if string != "" and string[0] == '-':
+        string = string.replace('-','')  
+        Negative = True  
+
+    string = string.replace(' ','')         #Remove spaces
+    if not string.isdigit():                                                  #Check if it's not integer
+        if re.match(r'^-?\d+(?:\.\d+)$', string) is None :                    #Check if it's not float
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('Please enter a valid Max number')
+            msg.setWindowTitle("Error")
+            msg.exec_()
+            raise ValueError(
+                    '"{}" is not a number, Please enter a number'.format(string)
+                )     
+    if (Negative):
+        return -1*float(string)             
+    return float(string) 
+
+
+#############################################################
+#############################################################
+##################  Main Dialog Class  ######################
+#############################################################
+#############################################################
+
 class Dialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -89,92 +185,9 @@ class Dialog(QDialog):
 
 #############################################################
 #############################################################
-##################  Functions To Plot  ######################
+######################  Plot Function  ######################
 #############################################################
 #############################################################
-
-        def ConvertStringtoFunction(string):
-            #Prepare the string to conversion   
-            string = string.replace('X','x')        #Convert to lowercase
-            string = string.replace(' ','')         #Remove spaces
-            string = string.replace('^','**')       #Handle power function
-
-            # find all words and check if all are allowed:
-            for char in string:
-                if char != 'x' and char != '+' and char != '-' and char != '/' and char != '*' and not char.isdigit():
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Critical)
-                    msg.setText("Error")
-                    msg.setInformativeText('Wrong Function Format !!, Please Use Only (+ - * / x)')
-                    msg.setWindowTitle("Error")
-                    msg.exec_()
-                    raise ValueError(
-                        '"{}" is forbidden to use in math expression'.format(char)
-                    )        
-            
-            if string == "":
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText('Please enter a valid function first :)')
-                msg.setWindowTitle("Error")
-                msg.exec_()
-                raise ValueError(
-                        'No function entered'
-                    )   
-
-            #Convert string to python code.   
-            def Function(x):
-                return eval(string)
-
-            return Function        
-
-        def CheckMinValidation(string):
-            #Check if the number is negative
-            Negative = False
-            if string != "" and string[0] == '-':
-                string = string.replace('-','')  
-                Negative = True  
-
-            string = string.replace(' ','')         #Remove spaces
-            if not string.isdigit():                                                  #Check if it's not integer
-                if re.match(r'^-?\d+(?:\.\d+)$', string) is None :                    #Check if it's not float
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Critical)
-                    msg.setText("Error")
-                    msg.setFixedSize(500,500)
-                    msg.setInformativeText('Please enter a valid Min number')
-                    msg.setWindowTitle("Error")
-                    msg.exec_()
-                    raise ValueError(
-                            '"{}" is not a number, Please enter a number'.format(string)
-                        )       
-            if (Negative):
-                return -1*float(string)             
-            return float(string)       
-
-        def CheckMaxValidation(string):
-            #Check if the number is negative
-            Negative = False
-            if string != "" and string[0] == '-':
-                string = string.replace('-','')  
-                Negative = True  
-
-            string = string.replace(' ','')         #Remove spaces
-            if not string.isdigit():                                                  #Check if it's not integer
-                if re.match(r'^-?\d+(?:\.\d+)$', string) is None :                    #Check if it's not float
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Critical)
-                    msg.setText("Error")
-                    msg.setInformativeText('Please enter a valid Max number')
-                    msg.setWindowTitle("Error")
-                    msg.exec_()
-                    raise ValueError(
-                            '"{}" is not a number, Please enter a number'.format(string)
-                        )     
-            if (Negative):
-                return -1*float(string)             
-            return float(string)       
 
         #The root function
         def Plot():
@@ -193,6 +206,12 @@ class Dialog(QDialog):
     #Listening to Events
         self.PlotBtn.clicked.connect(Plot)  
 
+
+#############################################################
+#############################################################
+#########################  Main  ############################
+#############################################################
+#############################################################
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
