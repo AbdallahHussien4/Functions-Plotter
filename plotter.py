@@ -102,8 +102,6 @@ class Dialog(QDialog):
             # find all words and check if all are allowed:
             for char in string:
                 if char != 'x' and char != '+' and char != '-' and char != '/' and char != '*' and not char.isdigit():
-                    # err = QErrorMessage()
-                    # err.showMessage("Wrong Function Format!!")
                     msg = QMessageBox()
                     msg.setIcon(QMessageBox.Critical)
                     msg.setText("Error")
@@ -140,7 +138,7 @@ class Dialog(QDialog):
 
             string = string.replace(' ','')         #Remove spaces
             if not string.isdigit():                                                  #Check if it's not integer
-                if re.match(r'^-?\d+(?:\.\d+)$', string) is None :     #Check if it's not float
+                if re.match(r'^-?\d+(?:\.\d+)$', string) is None :                    #Check if it's not float
                     msg = QMessageBox()
                     msg.setIcon(QMessageBox.Critical)
                     msg.setText("Error")
@@ -164,7 +162,7 @@ class Dialog(QDialog):
 
             string = string.replace(' ','')         #Remove spaces
             if not string.isdigit():                                                  #Check if it's not integer
-                if re.match(r'^-?\d+(?:\.\d+)$', string) is None :     #Check if it's not float
+                if re.match(r'^-?\d+(?:\.\d+)$', string) is None :                    #Check if it's not float
                     msg = QMessageBox()
                     msg.setIcon(QMessageBox.Critical)
                     msg.setText("Error")
